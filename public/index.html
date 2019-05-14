@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Franklin QR Generator</title>
+
+    <link rel="stylesheet" type="text/css" href="styles/inline.css" />
+    <link rel="stylesheet" type="text/css" href="styles/materialize.css" />
+
+    <script type="text/javascript" src="scripts/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="scripts/jquery.qrcode.min.js"></script>
+
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Add to home screen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="Weather PWA" />
+    <link rel="apple-touch-icon" href="images/icons/icon-152x152.png" />
+    <!-- Windows -->
+    <meta
+      name="msapplication-TileImage"
+      content="images/icons/icon-144x144.png"
+    />
+    <meta name="theme-color" content="#db5945" />
+    <meta name="msapplication-TileColor" content="#2F3BA2" />
+    <link rel="icon" type="image/png" href="images/icons/icon-144x144.png" />
+  </head>
+
+  <body>
+    <header class="header">
+      <h1 style="text-align: center;" class="header__title">
+        Franklin QR Generator
+      </h1>
+    </header>
+
+    <main class="main">
+      <div style="text-align: center;" class="container">
+        <section id="installBanner" class="banner">
+          <button id="installBtn">Install app</button>
+        </section>
+        <h5>
+          This application is used by the Franklin Camera app to generate QR
+          code for vehicle checkouts. It pulls vehicle by license plate number,
+          and generate QR code based on it plus enter_time. It then triggers
+          third-party payment methods for discreet payment. - Joe Li 05/13/2019
+        </h5>
+        <div class="card">
+          <div id="qrcode"></div>
+        </div>
+        <div class="row">
+          <form class="col s12">
+            <div class="row">
+              <div class="grid-example col s12">
+                <button
+                  class="waves-effect waves-light btn-large"
+                  id="buttonGenerate"
+                  type="button"
+                  name="button"
+                >
+                  Generate QR Code
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <section class="text-container">
+        <p id="message"></p>
+      </section>
+    </main>
+
+    <script type="text/javascript" src="scripts/app.js"></script>
+
+    <script>
+      let deferredPrompt;
+      window.addEventListener("beforeinstallprompt", event => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        event.preventDefault();
+
+        // Stash the event so it can be triggered later.
+        deferredPrompt = event;
+
+        // Attach the install prompt to a user gesture
+        document
+          .querySelector("#installBtn")
+          .addEventListener("click", event => {
+            // Show the prompt
+            deferredPrompt.prompt();
+
+            // Wait for the user to respond to the prompt
+            deferredPrompt.userChoice.then(choiceResult => {
+              if (choiceResult.outcome === "accepted") {
+                console.log("User accepted the A2HS prompt");
+              } else {
+                console.log("User dismissed the A2HS prompt");
+              }
+              deferredPrompt = null;
+            });
+          });
+
+        // Update UI notify the user they can add to home screen
+        document.querySelector("#installBanner").style.display = "flex";
+      });
+    </script>
+  </body>
+</html>
